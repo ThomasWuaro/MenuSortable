@@ -1,0 +1,52 @@
+{% block menu_row %}
+
+	<div class="form-group field-menu">
+		
+		{{ form_label(form) }}
+
+		<div class="form-widget">
+			<ul class="menu-sortable"></ul>
+			<!-- Button trigger modal -->
+			<a href="#" id="btn-add-item" type="button" class="btn btn-primary" data-add="true" data-toggle="modal" data-target="#menu-modal">Add an item</a>
+
+			<div class=""> {{ form_widget(form) }} </div>
+		</div>
+
+	</div>
+
+	<!-- Modal -->
+	<div class="modal fade" id="menu-modal" tabindex="-1" role="dialog" aria-labelledby="menu-modalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title" id="menu-modalLabel">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+					<div class="menu-item-config">
+						{# page #}
+						<div data-custom="false"><select class="menu-item-page"></select></div>
+						{# customs #}
+						<div data-custom="true">
+							<label>Title: <input type="text" class="menu-item-title"></label>
+							<label>Href: <input type="text" class="menu-item-href"></label>
+						</div>
+					</div>
+					<label><input type="checkbox" class="menu-item-custom">Custom link</label>
+					<label><input type="checkbox" class="menu-item-new-tab">New tab</label>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button id="btn-save" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

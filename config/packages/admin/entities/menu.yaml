@@ -1,0 +1,11 @@
+easy_admin:
+  entities:
+    Menu:
+
+      class: App\Entity\Menu
+      label: Menu
+
+      form:
+        fields:
+          - { property: 'name' }
+          - { property: 'list', type: 'App\Form\MenuType' }

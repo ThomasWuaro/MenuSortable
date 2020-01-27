@@ -1,0 +1,11 @@
+easy_admin:
+  design:
+
+    form_theme:
+      - '@EasyAdmin/form/bootstrap_4.html.twig'
+      - 'form/menu_field.html.twig'
+
+    menu:
+      # - { label: 'Menu', route: 'menu' }
+      - { label: 'Menu', entity: 'Menu' }
+      - { label: 'Page', entity: 'Page' }

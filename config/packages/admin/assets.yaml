@@ -1,0 +1,15 @@
+easy_admin:
+  design:
+    assets:
+
+      js:
+        - bundles/fosjsrouting/js/router.js
+        - js/routing?callback=fos.Router.setData
+        - jquery-ui.custom/jquery-ui.min.js
+        - js/jquery.nestedSortable.js
+        - https://kit.fontawesome.com/1797e68215.js
+        - js/main.js
+
+      css: 
+        - css/main.css
+

@@ -1,0 +1,29 @@
+.hide{
+	display: none;
+}
+
+.menu-item{
+	border: 1px solid black;
+	background: grey;
+	list-style: none;
+	margin-bottom: 5px;
+	padding: 5px;
+	color: black;
+	cursor:grab; 
+}
+
+.menu-sortable{
+	padding: 40px 20px;
+	background: black;
+}
+
+i.remove{
+	border: 1px solid black;
+	padding: 2px 5px;
+	margin: 5px;
+	cursor: pointer;
+}
+
+.hide{
+	display:none;
+}

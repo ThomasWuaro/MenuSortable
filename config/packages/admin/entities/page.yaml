@@ -1,0 +1,6 @@
+easy_admin:
+  entities:
+    Page:
+
+      class: App\Entity\Page
+      label: Page
