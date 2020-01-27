@@ -8,7 +8,7 @@ easy_admin:
         - jquery-ui.custom/jquery-ui.min.js
         - js/jquery.nestedSortable.js
         - https://kit.fontawesome.com/1797e68215.js
-        - js/main.js
+        - js/menu-sortable.js
 
       css: 
         - css/main.css
