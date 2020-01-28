@@ -1,20 +1,19 @@
 $(function(){
-	
-	var menu = $( ".menu-sortable" );
-	var storage = menu.closest('.form-widget').find('textarea');
+
 	var lastId = 0;
 
 	//#### AJAX ####//
 	var url = Routing.generate('getpages');
 	$.get(url, function(data){
-		var itemModal = new ItemModal(data);
-		var itemMenu = new ItemMenu(data);
+		var menuSortable = new MenuSortable(data);
+		new ItemModal(data, menuSortable);
 	});
 
 	//#### ITEM MODAL ####//
 	class ItemModal {
 
-		constructor(pages) {
+		constructor(pages, menuSortable) {
+			this.menuSortable = menuSortable;
 			this.modal = $('#menu-modal');
 			this.customEl = this.modal.find('.menu-item-custom');
 			this.newTabEl = this.modal.find('.menu-item-new-tab');
@@ -105,6 +104,16 @@ $(function(){
 			this.title = el.find(':selected').text();
 		}
 
+		editItem(el, item) {
+			el.attr('id', 'menu_'+ item.id);
+			el.data('href', item.href);
+			el.data('page', item.page);
+			el.data('name', item.name);
+			el.data('custom', item.custom);
+			el.attr('target', item.newTab);
+			el.text(item.name);
+		}
+
 		store() {
 			var item = { 
 				id: this.id, 
@@ -114,98 +123,87 @@ $(function(){
 				custom : this.custom,
 				newTab : this.newTab 
 			};
-			this.add ? createItem(item) : editItem(this.target, item);
-			storeMenuData();
+			this.add ? this.menuSortable.createItem(item) : this.editItem(this.target, item);
+			this.menuSortable.storeMenuData();
 		}
 
 	}
 
 	//#### MENU SORTABLE ####//
+	class MenuSortable {
 
-	class ItemMenu {
-
-		constructor(parsed) {
-			this.menu = menu;
-			this.storage = storage;
-			this.item = null;
-			this.newItem = null;
-			this.child = null;
+		constructor(loadedData) {
+			this.loadedData = loadedData;
+			this.menu = $( ".menu-sortable" );
+			this.storage = this.menu.closest('.form-widget').find('textarea');
 			this.initMenu();
-			this.loadMenuData(parsed);
+			this.loadMenuData();
 		}
 
 		initMenu() {
+			var that = this;
+
 			this.menu.nestedSortable({
 				listType: "ul",
 				items: ".menu-item",
 				maxLevels: 2,
-				stop: () => storeMenuData()
+				stop: () => that.storeMenuData()
 			});
 
 			this.menu.delegate('.remove','click', function(){
 				$(this).closest('.menu-item').remove();
-				storeMenuData();
+				that.storeMenuData();
 			});
 		}
 
-		loadMenuData(parsed){
+		createItem(item,  parent = null){
+			var container = this.menu;
+			if(parent && parent.length) {
+				container = parent.find('ul');
+				if(!container.length) { 
+					container = $('<ul>');
+					container.appendTo(parent);
+				}
+			}
+			var newItem = $('<li id="menu_' + item.id + '" class="menu-item" target="' + item.newTab + '" data-href="' + item.href + '" data-custom="' + item.custom + '" data-page="' + item.page + '" data-name="' + item.name + '" data-toggle="modal" data-target="#menu-modal">' + item.name + '<i class="fas fa-times remove"></i></li>');
+			newItem.appendTo(container);
+			if(item.id>lastId) lastId = item.id;
+			return newItem;
+		}
+
+		storeMenuData(){
+			var result = this.menu.nestedSortable('toHierarchy', { 
+				options : { attribute: "data-" } 
+			});
+			result = JSON.stringify(result);
+			this.storage.text(result);
+		}
+
+		createFromData(item) {
+			if( !item.custom ){
+				if( item.page in this.loadedData == false ) return false;
+				item.name = this.loadedData[item.page];
+			}
+			return this.createItem( item );
+		}
+
+		loadMenuData(){
 			var data = this.storage.text();
 			if(data == "") return;
 				try{
 					data = JSON.parse(data);
 					for(var i=0; i<data.length; i++){
 
-						this.item = data[i];
-						if(!this.item.custom){
-							if(this.item.page in parsed == false) continue;
-							this.item.name = parsed[this.item.page];
-						}
-						this.newItem = createItem(this.item);
-
-						if('children' in this.item ){
-							for(var n=0; n<this.item.children.length; n++){
-								this.child = this.item.children[n];
-								if(!this.child.custom){
-									if(this.child.page in parsed == false) continue;
-									this.child.name = parsed[child.page];
-								}
-								createItem(this.child, this.newItem );
+						var newItem = this.createFromData( data[i] );
+						if( newItem && 'children' in item ){
+							for(var n=0; n<item.children.length; n++){
+								this.createFromData( item.children[n] );
 							}
 						}
+
 					}
 				} catch(e) { console.warn('Error while parsing JSON : ' + e.message ) }
 		}
-	}
-
-	//#### FUNCTIONS ####//
-	function storeMenuData(){
-		var result = JSON.stringify(menu.nestedSortable('toHierarchy', { options : { attribute: "data-" } }));
-		storage.text(result);
-	}
-
-	function createItem(item,  parent = null){
-		var container = menu;
-		if(parent && parent.length) {
-			container = parent.find('ul');
-			if(!container.length) { 
-				container = $('<ul>');
-				container.appendTo(parent);
-			}
-		}
-		var newItem = $('<li id="menu_' + item.id + '" class="menu-item" target="' + item.newTab + '" data-href="' + item.href + '" data-custom="' + item.custom + '" data-page="' + item.page + '" data-name="' + item.name + '" data-toggle="modal" data-target="#menu-modal">' + item.name + '<i class="fas fa-times remove"></i></li>');
-		newItem.appendTo(container);
-		if(item.id>lastId) lastId = item.id;
-		return newItem;
-	}
-
-	function editItem(el, item) {
-		el.attr('id', 'menu_'+ item.id);
-		el.data('href', item.href);
-		el.data('page', item.page);
-		el.data('name', item.name);
-		el.data('custom', item.custom);
-		el.attr('target', item.newTab);
-		el.text(item.name);
 	}
 
 });
