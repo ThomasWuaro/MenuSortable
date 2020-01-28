@@ -1,0 +1,16 @@
+<ul>
+	{% for item in menu %}
+		<li>
+			<a href="{{ item.href }}" {% if item.tab %}target="_blank"{% endif %}>{{ item.name }}</a>
+			{% if item.children %}
+				<ul>
+					{% for child in item.children %}
+						<li>
+							<a href="{{ child.href }}" {% if child.tab %}target="_blank"{% endif %}>{{ child.name }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		</li>
+	{% endfor %}
+</ul>

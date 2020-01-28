@@ -9,7 +9,10 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {{ render(controller( 'App\\Controller\\MenuController::displayMenu', {slug: 'navbar'})) }}
+        {% block body %}
+        {% endblock %}
+        {{ render(controller( 'App\\Controller\\MenuController::displayMenu', {slug: 'footer'})) }}
 
         {% block javascripts %}
         {% endblock %}

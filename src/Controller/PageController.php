@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Page;
+use App\Service\PageManager;
 
 class PageController extends AbstractController
 {
@@ -21,15 +22,21 @@ class PageController extends AbstractController
     /**
      * @Route("/page/getpages", name="getpages", options={"expose":true}),
      */
-    public function getPages()
+    public function getPages(PageManager $pm)
     {
-    	$em = $this->getDoctrine()->getManager();
-    	$pages = $em->getRepository(Page::class)->findAll();
-    	$parsed = [];
- 		foreach($pages as $page){
- 			$parsed[$page->getId()] = $page->getTitle();
- 		}
-
- 		return $this->json($parsed);
+        $pages = $pm->getPages();
+ 		return $this->json($pages);
     }
+
+    /**
+     * @Route("/page/{id}", name="getpage")
+     */
+    public function getPage(Page $page)
+    {
+        return $this->render('page/page.html.twig', [
+            'page' => $page,
+        ]);
+    }
+
+
 }

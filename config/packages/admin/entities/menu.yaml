@@ -8,4 +8,5 @@ easy_admin:
       form:
         fields:
           - { property: 'name' }
+          - { property: 'slug' }
           - { property: 'list', type: 'App\Form\MenuType' }
